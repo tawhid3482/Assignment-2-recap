@@ -1,38 +1,35 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { orderServices } from './order.service'
 import orderValidationSchema from './order.validation'
 
-const createOrders = async (req: Request, res: Response) => {
+const createOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const orderData = req.body
     const zodParseData = orderValidationSchema.parse(orderData)
     const result = await orderServices.createOrderIntoDB(zodParseData)
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: 'Order created successfully!',
       data: result,
     })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Something went wrong',
-      data: error,
-    })
+    next(error) // Pass errors to Express error-handling middleware
   }
 }
 
-const getOrders = async (req: Request, res: Response) => {
+const getOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const email = req.query.email as string | undefined
+    const email = req.query.email as string
     let result
     if (email) {
       result = await orderServices.getOrderByEmailIntoDB(email)
 
       if (!result) {
-        return res.status(404).json({
+        res.status(404).json({
           success: false,
           message: `Order not found`,
         })
+        return
       }
       res.status(200).json({
         success: true,
@@ -47,12 +44,8 @@ const getOrders = async (req: Request, res: Response) => {
         data: result,
       })
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Something went wrong',
-    })
+    next(error) // Pass errors to Express error-handling middleware
   }
 }
 
