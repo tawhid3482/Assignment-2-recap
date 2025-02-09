@@ -1,8 +1,8 @@
-type TVariants = {
+export type TVariants = {
   type: string
   value: string
 }
-type TInventory = {
+export type TInventory = {
   quantity: number
   inStock: boolean
 }
@@ -15,4 +15,5 @@ export type TProduct = {
   tags: string[]
   variants: TVariants[]
   inventory: TInventory
+  isDeleted?:boolean 
 }
