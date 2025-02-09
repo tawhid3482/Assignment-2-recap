@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express'
 import { ProductRoutes } from './app/modules/Products/Products.route'
 import cors from 'cors'
 import { orderRoute } from './app/modules/order/order.route'
-const app:Application = express()
+const app: Application = express()
 
 // parsers
 app.use(express.json())
@@ -14,6 +14,13 @@ app.use('/api', orderRoute)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World devs!')
+})
+
+app.use((req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+  })
 })
 
 export default app

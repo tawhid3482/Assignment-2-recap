@@ -12,10 +12,10 @@ const createOrders = async (req: Request, res: Response) => {
       message: 'Order created successfully!',
       data: result,
     })
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Something went wrong',
+      message: 'Something went wrong',
       data: error,
     })
   }
@@ -23,10 +23,17 @@ const createOrders = async (req: Request, res: Response) => {
 
 const getOrders = async (req: Request, res: Response) => {
   try {
-    const email = req.query.email as string
+    const email = req.query.email as string | undefined
     let result
     if (email) {
       result = await orderServices.getOrderByEmailIntoDB(email)
+
+      if (!result) {
+        return res.status(404).json({
+          success: false,
+          message: `Order not found`,
+        })
+      }
       res.status(200).json({
         success: true,
         message: 'Orders fetched successfully for user email!',
@@ -40,10 +47,11 @@ const getOrders = async (req: Request, res: Response) => {
         data: result,
       })
     }
-  } catch (error: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || 'Something went wrong',
+      message: 'Something went wrong',
     })
   }
 }
